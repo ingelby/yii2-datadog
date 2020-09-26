@@ -1,0 +1,23 @@
+{
+  "name": "ingelby/yii2-datadog",
+  "description": "Yii2 Datadog",
+  "type": "library",
+  "license": "Proprietary",
+  "authors": [
+    {
+      "name": "George Hallam",
+      "email": "george.hallam@ingelby.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Ingelby\\Datadog\\": "src"
+    }
+  },
+  "require": {
+    "php": ">=7.4.0",
+    "guzzlehttp/guzzle": "6.3.*"
+  },
+  "require-dev": {
+  }
+}
