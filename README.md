@@ -1,4 +1,7 @@
-# yii2-datadog
+# Yii2 Datadog Component
+
+Requires datadog agent installed and dd-trace-php extention (https://github.com/DataDog/dd-trace-php)
+
 
 ## Installation
 
