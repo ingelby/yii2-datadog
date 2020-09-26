@@ -1,9 +1,9 @@
 <?php
 
-
 namespace Ingelby\Datadog\Logging;
 
 
+use common\helpers\SessionGuid;
 use Ingelby\Datadog\Logging\Exceptions\DataDogLogConfigurationException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -42,6 +42,7 @@ class DataDogTarget extends Target
     public function init()
     {
         parent::init();
+
         if (null === $this->dataDogApiKey) {
             throw new DataDogLogConfigurationException('No DataDog API key');
         }
@@ -121,14 +122,30 @@ class DataDogTarget extends Target
         $promise->wait();
     }
 
-    public function arrayFormatMessage($message)
+    /**
+     * @param $message
+     * @return array
+     */
+    public function arrayFormatMessage($message): array
     {
         [$text, $level, $category, $timestamp] = $message;
+        $traceId = SessionGuid::get();
+        $spanId = 'unknown';
+        if (class_exists(\DDTrace\GlobalTracer::class)) {
+            $tracer = \DDTrace\GlobalTracer::get();
+            if (method_exists($tracer, 'getActiveSpan')) {
+                $span = $tracer->getActiveSpan();
+                $traceId = $span->getTraceId();
+                $spanId = $span->getSpanId();
+            }
+        }
+
         return [
-            'level'     => strtoupper(Logger::getLevelName($level)),
-            'eventTime' => $this->getTime($timestamp),
-            'trace_id'  => $this->getMessagePrefix($message),
-            'message'   => $text,
+            'level'       => strtoupper(Logger::getLevelName($level)),
+            'eventTime'   => $this->getTime($timestamp),
+            'dd.trace_id' => $traceId,
+            'dd.span_id'  => $spanId,
+            'message'     => $text,
         ];
     }
 }
