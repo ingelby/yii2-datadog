@@ -34,6 +34,7 @@ class DataDogTarget extends Target
 
 
     protected ?Client $guzzleClient = null;
+    protected ?\DDTrace\Span $span = null;
 
     /**
      * {@inheritdoc}
@@ -57,6 +58,8 @@ class DataDogTarget extends Target
         }
 
         $this->dataDogTags['env'] = $this->environment;
+
+        $this->span = \DDTrace\GlobalTracer::get()->getActiveSpan();
 
         if (null === $this->guzzleClient) {
             $this->guzzleClient = new Client(
@@ -115,6 +118,7 @@ class DataDogTarget extends Target
             function (RequestException $e) {
                 $response = [];
                 $response['data'] = $e->getMessage();
+
                 return $response;
             }
         );
@@ -131,13 +135,10 @@ class DataDogTarget extends Target
         [$text, $level, $category, $timestamp] = $message;
         $traceId = SessionGuid::get();
         $spanId = 'unknown';
-        if (class_exists(\DDTrace\GlobalTracer::class)) {
-            $tracer = \DDTrace\GlobalTracer::get();
-            if (method_exists($tracer, 'getActiveSpan')) {
-                $span = $tracer->getActiveSpan();
-                $traceId = $span->getTraceId();
-                $spanId = $span->getSpanId();
-            }
+
+        if (null !== $this->span) {
+            $traceId = $this->span->getTraceId();
+            $spanId = $this->span->getSpanId();
         }
 
         return [
