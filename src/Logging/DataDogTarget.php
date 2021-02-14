@@ -2,8 +2,6 @@
 
 namespace Ingelby\Datadog\Logging;
 
-
-use common\helpers\SessionGuid;
 use Ingelby\Datadog\Logging\Exceptions\DataDogLogConfigurationException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -133,7 +131,7 @@ class DataDogTarget extends Target
     public function arrayFormatMessage($message): array
     {
         [$text, $level, $category, $timestamp] = $message;
-        $traceId = SessionGuid::get();
+        $traceId ='unknown';
         $spanId = 'unknown';
 
         if (null !== $this->span) {
