@@ -11,6 +11,13 @@ Requires:
 "ingelby/yii2-datadog": "^0.*"
 ```
 
+```
+    {
+      "type": "vcs",
+      "url": "git@github.com:ingelby/yii2-datadog.git"
+    }
+```
+
 ## Usage
 
 ### Logging
